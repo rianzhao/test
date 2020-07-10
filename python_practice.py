@@ -57,22 +57,13 @@ show_map(fruit)
 
 # 4. 在test项目目录中打开一个名为test.txt的文件，在已有文字后面，写入"hello world"。如果找不到文件，本地创建一个同名新文件。
 #
-
-# import os
-# def add_to_file():
-#     file_name = 'test.txt'
-#     if not path.exists(file_name):
-#         print('file not exist')
-#         with open(file_name, 'w') as fp:
-#             fp.write('hello world')
-#             fp.close()
-#     else:
-#         f = open(file_name, 'r')
-#         f.write('hello world')
-#         f.close()
+def add_to_file():
+    file = open("test.txt","a")
+    file.write("hello world\n")
+    file.close()
 
 
-# add_to_file()
+add_to_file()
 
 
 #
