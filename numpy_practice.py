@@ -20,4 +20,21 @@
 # EXCEL表格内容包括  用户基本信息 （id, 名字，职业，电影名，电影类别，评分，打分日期）
 # 通过图标进行一些简单的数据分析，例如，什么从用户角度，什么职业的人最多，用户评分最多是什么，再比如，从电影角度，哪种类型的电影最受欢迎，等等
 
+import openpyxl
+import xlwt
+import pandas as pd
+pd.set_option('display.max_columns', None)
 
+df_data = pd.read_csv('u.data', sep='\t')
+df_user = pd.read_csv('u.user', sep='|')
+df_item = pd.read_csv('u.item', sep='|')
+
+df_data_user = pd.merge(df_data, df_user, left_on='user id ', right_on='user id ', how='inner')
+
+df_data_user_item = pd.merge(df_data_user, df_item, left_on=' item id ', right_on='movie id ', how='inner')
+
+df = df_data_user_item.drop(' IMDb URL ',axis=1)
+df.to_excel('df_data_user_item.xlsx')
+print(df)
+
+#
