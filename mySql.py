@@ -96,8 +96,6 @@ mycursor.executemany(gen, read_file(prefix + "u.genre", delimiter="|", col_name=
 mycursor.executemany(info,read_file(prefix + "u.info", delimiter=" ", col_name=False))
 mycursor.executemany(ite, read_file(prefix + "u.item", delimiter="|"))
 
-mycursor.executemany(gen, [('unknown', '0'), ('Adventure', '2'), ('Animation', '3'), ("Children's", '4'), ('Comedy', '5'), ('Crime', '6'), ('Documentary', '7'), ('Drama', '8') ])
-
 mydb.commit()
 
 
