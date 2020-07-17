@@ -99,6 +99,28 @@ mycursor.executemany(ite, read_file(prefix + "u.item", delimiter="|"))
 mydb.commit()
 
 
+# my advice on coding
+# more logs to show status
+# use one method for executemany "DONOT REPEAT"
+
+# my advice on table generation
+# sql table using "IF exist"
+# adjust data if id is in the second column
+# use foreign key to establish relationship
+
+# 练习
+# exercise: https://www.w3schools.com/sql/sql_exercises.asp
+# go back to previous numpy exercise to adjust merge option compare difference
+# 重新调整SCHEMA,重新执行PYTHON程序，将数据录入。
+
+# query study:
+# 1. 选DATA中最受欢迎（最多评论）的那一部电影，写出QUERY得到所有评分人名
+# 2. 选出学生中最受欢迎的前五步电影。
+# 3. 选出女性观众最不喜欢的3部电影
+# 4. 选出年龄20-40岁之间观众最喜欢的爱情片
+
+
+
 
 
 
