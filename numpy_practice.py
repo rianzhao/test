@@ -33,7 +33,7 @@ df_data_user = pd.merge(df_data, df_user, left_on='user id ', right_on='user id 
 
 df_data_user_item = pd.merge(df_data_user, df_item, left_on=' item id ', right_on='movie id ', how='inner')
 
-df = df_data_user_item.drop(' IMDb URL ',axis=1)
+df = df_data_user_item.drop(' IMDb URL ', axis=1)
 df.to_excel('df_data_user_item.xlsx')
 print(df)
 

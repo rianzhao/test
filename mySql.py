@@ -16,25 +16,30 @@ mydb = mysql.connector.connect(
 
 mycursor=mydb.cursor()
 
-mycursor.execute("CREATE TABLE occupation (name VARCHAR(255))")
-mycursor.execute("create table ddddata "
-                 "(user_id INT(11), "
-                 "item_id INT(11), "
-                 "rating INT(5) CHECK (rating >= 1 and rating <= 5),"
-                 "timestamp VARCHAR(255))")
-mycursor.execute("create table user"
+
+mycursor.execute("CREATE TABLE IF NOT EXISTS occupation (occu_name VARCHAR(255) PRIMARY KEY)")
+print("table occupation created")
+
+mycursor.execute("create table if not exists user"
                  "(user_id INT AUTO_INCREMENT PRIMARY KEY, "
                  "age INT UNSIGNED,"
                  "gender VARCHAR(255),"
                  "occupation VARCHAR(255),"
-                 "zip_code VARCHAR(255))")
-mycursor.execute("create table genre"
+                 "zip_code VARCHAR(255),"
+                 "foreign key(occupation) references occupation(occu_name))")
+print("table user created")
+
+mycursor.execute("create table if not exists genre"
                  "(type VARCHAR(255),"
                  "id INT PRIMARY KEY)")
-mycursor.execute("create table info"
+print("table genre created")
+
+mycursor.execute("create table if not exists info"
                  "(num INT,"
-                 "type VARCHAR(255))")
-mycursor.execute("create table item"
+                 "type VARCHAR(255) PRIMARY KEY)")
+print("table info created")
+
+mycursor.execute("create table if not exists item"
                  "(movie_id INT AUTO_INCREMENT PRIMARY KEY,"
                  "movie_title VARCHAR(255),"
                  "release_date VARCHAR(255),"
@@ -59,8 +64,19 @@ mycursor.execute("create table item"
                  "thriller INT CHECK(thriller=1 or thriller=0),"
                  "war INT CHECK(war=1 or war=0),"
                  "western INT CHECK(western=1 or western=0))")
+print("table item created")
 
-occu="INSERT INTO occupation (name) VALUE (%s)"
+mycursor.execute("create table if not exists ddddata"
+                 "(user_id INT(11), "
+                 "item_id INT(11), "
+                 "rating INT(5) CHECK (rating >= 1 and rating <= 5),"
+                 "timestamp VARCHAR(255),"
+                 "PRIMARY KEY (user_id, item_id),"
+                 "foreign key (user_id) references user(user_id),"
+                 "foreign key (item_id) references item(movie_id))")
+print("table data created")
+
+occu="INSERT INTO occupation (occu_name) VALUE (%s)"
 
 dat="INSERT INTO ddddata (user_id, item_id, rating, timestamp) VALUES (%s, %s, %s,%s)"
 
@@ -89,14 +105,18 @@ def read_file(filename, delimiter=" ", col_name=True):
 
   return res
 
-mycursor.executemany(occu, read_file(prefix + "u.occupation", col_name=False))
-mycursor.executemany(dat, read_file(prefix + "u.data", delimiter='\t'))
-mycursor.executemany(use, read_file(prefix + "u.user", delimiter="|"))
-mycursor.executemany(gen, read_file(prefix + "u.genre", delimiter="|", col_name=False))
-mycursor.executemany(info,read_file(prefix + "u.info", delimiter=" ", col_name=False))
-mycursor.executemany(ite, read_file(prefix + "u.item", delimiter="|"))
 
+
+# mycursor.executemany(occu, read_file(prefix + "u.occupation", col_name=False))
+# mycursor.executemany(use, read_file(prefix + "u.user", delimiter="|"))
+# mycursor.executemany(gen, read_file(prefix + "u.genre", delimiter="|", col_name=False))
+# mycursor.executemany(info,read_file(prefix + "u.info", delimiter=" ", col_name=False))
+# mycursor.executemany(ite, read_file(prefix + "u.item", delimiter="|"))
+# mycursor.executemany(dat, read_file(prefix + "u.data", delimiter='\t'))
+
+print("data inserted into tables")
 mydb.commit()
+
 
 
 # my advice on coding
@@ -118,6 +138,56 @@ mydb.commit()
 # 2. 选出学生中最受欢迎的前五步电影。
 # 3. 选出女性观众最不喜欢的3部电影
 # 4. 选出年龄20-40岁之间观众最喜欢的爱情片
+#1:
+a = "with top_review as " \
+    "(select item_id, count(item_id) as cnt " \
+    "from ddddata group by item_id order by cnt desc limit 1) " \
+    "select user_id from ddddata natural join top_review;"
+mycursor.execute(a)
+myresult1=mycursor.fetchall()
+
+
+#2:
+b = "with student_col as " \
+    "(select * from user natural join ddddata where occupation = 'student')," \
+    "top_review as " \
+    "(select movie_title, item_id, count(item_id) as cnt " \
+    "from student_col inner join item on student_col.item_id = item.movie_id group by item_id " \
+    "order by cnt desc limit 5)" \
+    "select movie_title from top_review"
+
+mycursor.execute(b)
+myresult2=mycursor.fetchall()
+
+#3:
+c = "with female_col as " \
+    "(select * from user natural join ddddata where gender = 'M')," \
+    "top_review as " \
+    "(select movie_title, item_id, count(item_id) as cnt " \
+    "from female_col inner join item on female_col.item_id = item.movie_id group by item_id " \
+    "order by cnt limit 3)" \
+    "select movie_title from top_review"
+
+mycursor.execute(c)
+myresult3=mycursor.fetchall()
+
+
+#4:
+d = "with age_col as "\
+    "(select * from user natural join ddddata where age between 20 and 40)," \
+    "romance_col as " \
+    "(select * from item where romance=1)," \
+    "top_review as " \
+    "(select movie_title, item_id, count(item_id) as cnt " \
+    "from age_col inner join romance_col on age_col.item_id = romance_col.movie_id group by item_id " \
+    "order by cnt desc limit 1)" \
+    "select movie_title from top_review "\
+
+mycursor.execute(d)
+myresult4=mycursor.fetchall()
+print(myresult4)
+
+
 
 
 
