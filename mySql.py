@@ -35,7 +35,7 @@ info_schema = 'create table if not exists info' \
                  'type VARCHAR(255) PRIMARY KEY)'
 
 item_schema = 'create table if not exists item' \
-                 '(movie_id INT AUTO_INCREMENT PRIMARY KEY,' \
+                 '(movie_id INT PRIMARY KEY,' \
                  'movie_title VARCHAR(255),' \
                  'release_date VARCHAR(255),' \
                  'video_release_date VARCHAR(255),' \
@@ -62,8 +62,8 @@ gen='INSERT INTO genre (type, id) VALUES (%s, %s)'
 
 info='INSERT INTO info (num, type) VALUES (%s, %s)'
 
-ite='INSERT INTO item (movie_title, release_date, video_release_date, IMDB_URL, genre_id) ' \
-    'VALUES (%s, %s, %s, %s, %s)'
+ite='INSERT INTO item (movie_id, movie_title, release_date, video_release_date, IMDB_URL, genre_id) ' \
+    'VALUES (%s, %s, %s, %s, %s, %s)'
 
 
 # table cleaning for fresh generation and data insert
@@ -130,8 +130,9 @@ def load_data(sql, source, delimiter):
             index_list = np.nonzero([int(i) for i in detail[5:]])[0]
             for i in index_list:
                 genre_id = find_gen_id(title[i + 5].strip())
-                detail = detail[1:5] + [genre_id]
+                detail = detail[0:5] + [genre_id]
                 mycursor.execute(sql, detail)
+                break
         mydb.commit()
     elif source == 'u.data':
         data_to_load = data_to_load[1:]
@@ -188,53 +189,53 @@ print('data inserted into tables')
 # 3. 选出女性观众最不喜欢的3部电影
 # 4. 选出年龄20-40岁之间观众最喜欢的爱情片
 #1:
-# a = 'with top_review as ' \
-#     '(select item_id, count(item_id) as cnt ' \
-#     'from data group by item_id order by cnt desc limit 1) ' \
-#     'select user_id from data natural join top_review;'
-# mycursor.execute(a)
-# myresult1=mycursor.fetchall()
+a = 'with top_review as ' \
+    '(select item_id, count(item_id) as cnt ' \
+    'from data group by item_id order by cnt desc limit 1) ' \
+    'select user_id from data natural join top_review;'
+mycursor.execute(a)
+myresult1=mycursor.fetchall()
 
 
 #2:
-# b = 'with student_col as ' \
-#     '(select * from user natural join data where occupation = "student"),' \
-#     'top_review as ' \
-#     '(select movie_title, item_id, count(item_id) as cnt ' \
-#     'from student_col inner join item on student_col.item_id = item.movie_id group by item_id ' \
-#     'order by cnt desc limit 5)' \
-#     'select movie_title from top_review'
-#
-# mycursor.execute(b)
-# myresult2=mycursor.fetchall()
+b = 'with student_col as ' \
+    '(select * from user natural join data where occupation = "student"),' \
+    'top_review as ' \
+    '(select movie_title, item_id, count(item_id) as cnt ' \
+    'from student_col inner join item on student_col.item_id = item.movie_id group by item_id ' \
+    'order by cnt desc limit 5)' \
+    'select movie_title from top_review'
+
+mycursor.execute(b)
+myresult2=mycursor.fetchall()
 
 #3:
-# c = 'with female_col as ' \
-#     '(select * from user natural join data where gender = "M"),' \
-#     'top_review as ' \
-#     '(select movie_title, item_id, count(item_id) as cnt ' \
-#     'from female_col inner join item on female_col.item_id = item.movie_id group by item_id ' \
-#     'order by cnt limit 3)' \
-#     'select movie_title from top_review'
-#
-# mycursor.execute(c)
-# myresult3=mycursor.fetchall()
+c = 'with female_col as ' \
+    '(select * from user natural join data where gender = "M"),' \
+    'top_review as ' \
+    '(select movie_title, item_id, count(item_id) as cnt ' \
+    'from female_col inner join item on female_col.item_id = item.movie_id group by item_id ' \
+    'order by cnt limit 3)' \
+    'select movie_title from top_review'
+
+mycursor.execute(c)
+myresult3=mycursor.fetchall()
 
 
 #4:
-# d = 'with age_col as '\
-#     '(select * from user natural join data where age between 20 and 40),' \
-#     'romance_col as ' \
-#     '(select * from item where romance=1),' \
-#     'top_review as ' \
-#     '(select movie_title, item_id, count(item_id) as cnt ' \
-#     'from age_col inner join romance_col on age_col.item_id = romance_col.movie_id group by item_id ' \
-#     'order by cnt desc limit 1)' \
-#     'select movie_title from top_review '\
-#
-# mycursor.execute(d)
-# myresult4=mycursor.fetchall()
-# print(myresult4)
+d = 'with age_col as '\
+    '(select * from user natural join data where age between 20 and 40),' \
+    'romance_col as ' \
+    '(select * from item where romance=1),' \
+    'top_review as ' \
+    '(select movie_title, item_id, count(item_id) as cnt ' \
+    'from age_col inner join romance_col on age_col.item_id = romance_col.movie_id group by item_id ' \
+    'order by cnt desc limit 1)' \
+    'select movie_title from top_review '\
+
+mycursor.execute(d)
+myresult4=mycursor.fetchall()
+print(myresult4)
 
 
 # additional comments 7/19
