@@ -24,7 +24,7 @@
            Practised collecting data from voice to text using natural language processing lib.
            Learned the most popular algorithms, understood mathematical logic and code implementation.
            Solved code conflicts.
-           Implemented data cleaning and model training using sci-kitlearn, visualized result in matplotlib
+           Implemented data cleaning and model training using scikit-learn, visualized result in matplotlib
 
 4. week 4: Get familiar with cloud platform and its services.
            Subscribed machine learning service in Microsoft Azure and implemented a linear regression model.
